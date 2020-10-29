@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
     Widget liveData = StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('test')
-          .doc('test1')
+          .doc('test2')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
@@ -42,44 +42,36 @@ class _HomePageState extends State<HomePage> {
       },
     );
 
+    Widget getData = Center(
+      child: Column(
+          children: data
+              .map((function) => RaisedButton(
+                  child: Text(
+                      (RegExp(r"['](.*?)[']").stringMatch(function.toString()))
+                          .replaceAll("'", "")),
+                  onPressed: () => function.call()))
+              .toList()),
+    );
+
     return Scaffold(
         appBar: AppBar(
           title: Text('firebase'),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              RaisedButton(
-                child: Text('documentGets'),
-                onPressed: () {
-                  documentGets();
-                },
-              ),
-              RaisedButton(
-                child: Text('documentSets1'),
-                onPressed: () {
-                  documentSets1();
-                },
-              ),
-              RaisedButton(
-                child: Text('documentSets2'),
-                onPressed: () {
-                  documentSets2();
-                },
-              ),
-              RaisedButton(
-                child: Text('documentRemoves'),
-                onPressed: () {
-                  documentRemoves();
-                },
-              ),
-            ],
-          ),
-        ));
+        body: getData);
   }
 
+  List<Function> data = [
+    documentGets,
+    documentSets1,
+    documentSets2,
+    documentRemoves,
+    fieldGets,
+    fieldAdds,
+    fieldRemoves
+  ];
+
   // Document
-  documentGets() {
+  static documentGets() {
     FirebaseFirestore.instance.collection('test').get().then((value) {
       for (DocumentSnapshot doc in value.docs) {
         print(doc.id);
@@ -88,7 +80,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  documentSets1() {
+  static documentSets1() {
     FirebaseFirestore.instance
         .collection('test')
         .doc('test3')
@@ -97,7 +89,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  documentSets2() {
+  static documentSets2() {
     FirebaseFirestore.instance
         .collection('test')
         .add({'type': 'user info'}).then((value) {
@@ -105,7 +97,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  documentRemoves() {
+  static documentRemoves() {
     FirebaseFirestore.instance
         .collection('test')
         .doc('test1')
@@ -115,9 +107,30 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  fieldGets() {
+  static fieldGets() {
     FirebaseFirestore.instance
-    .collection('test2')
-    .doc('test1')
+        .collection('test')
+        .doc('test2')
+        .get()
+        .then((value) {
+      print(value.data());
+    });
+  }
+
+  static fieldAdds() {
+    FirebaseFirestore.instance.collection('test').doc('test2').update({
+      'type': 'user info',
+    }).then((_) {
+      print('Done fieldAdds');
+    });
+  }
+
+  static fieldRemoves() {
+    FirebaseFirestore.instance
+        .collection('test')
+        .doc('test2')
+        .update({'type': FieldValue.delete()}).then((_) {
+      print('Done fieldRemoves');
+    });
   }
 }
