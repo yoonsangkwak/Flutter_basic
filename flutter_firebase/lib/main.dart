@@ -31,106 +31,59 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    Widget liveData = StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('test')
-          .doc('test2')
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
-        return Text(snapshot.data['name']);
-      },
-    );
-
-    Widget getData = Center(
-      child: Column(
-          children: data
-              .map((function) => RaisedButton(
-                  child: Text(
-                      (RegExp(r"['](.*?)[']").stringMatch(function.toString()))
-                          .replaceAll("'", "")),
-                  onPressed: () => function.call()))
-              .toList()),
-    );
-
     return Scaffold(
-        appBar: AppBar(
-          title: Text('firebase'),
+      appBar: AppBar(
+        title: Text('Votes'),
+      ),
+      body: Container(
+        margin: EdgeInsets.only(bottom: 10),
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: ListTile(
+                title: Text('C'),
+                trailing: Text('20'),
+              ),
+            ),
+            Container(
+        margin: EdgeInsets.only(bottom: 10),
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: ListTile(
+                title: Text('C'),
+                trailing: Text('20'),
+              ),
+            ),
+            Container(
+        margin: EdgeInsets.only(bottom: 10),
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: ListTile(
+                title: Text('C'),
+                trailing: Text('20'),
+              ),
+            ),
+            
+          ],
         ),
-        body: getData);
-  }
-
-  List<Function> data = [
-    documentGets,
-    documentSets1,
-    documentSets2,
-    documentRemoves,
-    fieldGets,
-    fieldAdds,
-    fieldRemoves
-  ];
-
-  // Document
-  static documentGets() {
-    FirebaseFirestore.instance.collection('test').get().then((value) {
-      for (DocumentSnapshot doc in value.docs) {
-        print(doc.id);
-      }
-      print('Done documentGets');
-    });
-  }
-
-  static documentSets1() {
-    FirebaseFirestore.instance
-        .collection('test')
-        .doc('test3')
-        .set({'type': 'user info'}).then((value) {
-      print('Done documentSets1');
-    });
-  }
-
-  static documentSets2() {
-    FirebaseFirestore.instance
-        .collection('test')
-        .add({'type': 'user info'}).then((value) {
-      print('Done documentSets2');
-    });
-  }
-
-  static documentRemoves() {
-    FirebaseFirestore.instance
-        .collection('test')
-        .doc('test1')
-        .delete()
-        .then((value) {
-      print('Done documentRemoves');
-    });
-  }
-
-  static fieldGets() {
-    FirebaseFirestore.instance
-        .collection('test')
-        .doc('test2')
-        .get()
-        .then((value) {
-      print(value.data());
-    });
-  }
-
-  static fieldAdds() {
-    FirebaseFirestore.instance.collection('test').doc('test2').update({
-      'type': 'user info',
-    }).then((_) {
-      print('Done fieldAdds');
-    });
-  }
-
-  static fieldRemoves() {
-    FirebaseFirestore.instance
-        .collection('test')
-        .doc('test2')
-        .update({'type': FieldValue.delete()}).then((_) {
-      print('Done fieldRemoves');
-    });
+      ),
+    );
   }
 }
