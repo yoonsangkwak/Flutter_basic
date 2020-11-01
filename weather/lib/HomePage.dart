@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -23,7 +24,11 @@ class _HomePageState extends State<HomePage> {
   String units = "units=metric";
 
   var background = Color(0xFFB1D1CF);
+  var textground = Color(0xFF9DBBB9);
   String image = "images/cold_mountain.png";
+
+  DateFormat formatter = DateFormat("H시 m분 s초");
+  DateFormat sun = DateFormat("H시 m분");
 
   void permission() async {
     await Geolocator.requestPermission();
@@ -54,10 +59,12 @@ class _HomePageState extends State<HomePage> {
     if (weatherData['main']['temp'] < 22) {
       background = Color(0xFFB1D1CF);
       image = "images/cold_mountain.png";
+      textground = Color(0xFF9DBBB9);
       print('cold');
     } else {
       background = Color(0xFFF5CE88);
       image = "images/hot_mountain.png";
+      textground = Color(0xFFE5AB48);
       print('hot');
     }
     return weatherData;
@@ -287,6 +294,135 @@ class _HomePageState extends State<HomePage> {
                             image,
                             width: MediaQuery.of(context).size.width,
                           ),
+
+                          // step5
+                          Container(
+                            padding: EdgeInsets.only(right: 10, top: 10),
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                                'Last Updated: ${formatter.format(DateTime.now())}'),
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: Card(
+                              color: textground,
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                margin: EdgeInsets.all(10),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'More Information',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    IntrinsicHeight(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Icon(
+                                            Icons.water_damage,
+                                            color: Colors.white,
+                                          ),
+                                          Column(
+                                            children: [
+                                              Text('Humidity'),
+                                              Text(
+                                                  '${snapshot.data['main']['humidity']}%'),
+                                            ],
+                                          ),
+                                          VerticalDivider(color: Colors.white),
+                                          Icon(
+                                            Icons.remove_red_eye,
+                                            color: Colors.white,
+                                          ),
+                                          Column(
+                                            children: [
+                                              Text('Visibility'),
+                                              Text(
+                                                  '${snapshot.data['visibility']}')
+                                            ],
+                                          ),
+                                          VerticalDivider(color: Colors.white),
+                                          Icon(
+                                            Icons.water_damage,
+                                            color: Colors.white,
+                                          ),
+                                          Column(
+                                            children: [
+                                              Text('Countru'),
+                                              Text(
+                                                  '${snapshot.data['sys']['country']}')
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    IntrinsicHeight(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          infoSpace(Icons.speed, 'Wind Speed',
+                                              '${snapshot.data['wind']['speed']}'),
+                                          VerticalDivider(
+                                            color: Colors.white,
+                                          ),
+                                          infoSpace(
+                                              Icons.compass_calibration,
+                                              'Wind Deg',
+                                              '${snapshot.data['wind']['deg']}'),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    IntrinsicHeight(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          infoSpace(
+                                              Icons.wb_sunny,
+                                              'Sunset',
+                                              sun.format(DateTime
+                                                  .fromMillisecondsSinceEpoch(
+                                                      snapshot.data['sys']
+                                                              ['sunset'] *
+                                                          1000))),
+                                          VerticalDivider(
+                                            color: Colors.white,
+                                          ),
+                                          infoSpace(
+                                              Icons.nights_stay,
+                                              'Sunrise',
+                                              sun.format(DateTime
+                                                  .fromMillisecondsSinceEpoch(
+                                                      snapshot.data['sys']
+                                                              ['sunrise'] *
+                                                          1000))),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          )
                         ],
                       ),
                     );
@@ -297,10 +433,29 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          print("");
-        },
+    );
+  }
+
+  Widget infoSpace(IconData icons, String topText, String bottomeText) {
+    return Container(
+      width: MediaQuery.of(context).size.width / 2 - 50,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Icon(
+            icons,
+            color: Colors.white,
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width / 5,
+            child: Column(
+              children: [
+                Text(topText),
+                Text(bottomeText),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
